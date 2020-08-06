@@ -10,4 +10,7 @@ do with Bash and Vim as well as handy aliases and functions for wsl.
 3. Run `npm install`
 4. Open `index.html` in your browser. Edit `index.html` to make any changes.
 
+Alternatively, you can just download `7-aug-2020-unix-workshop-georgie.pdf` directly
+from this repo.
+
 Built using `reveal.js`.
