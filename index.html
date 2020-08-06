@@ -1,40 +1,395 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
 
-		<title>reveal.js</title>
+    <title>reveal.js</title>
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css" id="theme">
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/black.css" id="theme" />
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+    <!-- Theme used for syntax highlighted code -->
+    <link
+      rel="stylesheet"
+      href="plugin/highlight/monokai.css"
+      id="highlight-theme"
+    />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h1>Cool stuff with Vim and Bash</h1>
+          <p>Made by Georgie Lee for</p>
+          <p>SoC UNIX Workshop 07 August 2020</p>
+        </section>
+        <section data-markdown>
+          But first, some QoL enhancements
+        </section>
+        <section data-markdown>
+          Make sure you have <code>CTRL+SHIFT+V</code> (paste) and
+          <code>CTRL+SHIFT+C</code> (copy) enabled.
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            Create `~/.inputrc` and add these in
+            ```bash
+            "\e[A": history-search-backward
+            "\e[B": history-search-forward
+            set show-all-if-ambiguous on
+            set completion-ignore-case on
+            ```
+            Now, you can do case-insensitive file and directory name completion!
+          </textarea>
+        </section>
+        <section>
+          <section>
+            (Warm-up)<br />
+            Make a list of numbers with Vim using
+            <pre style="width: 50%;"><code>
+          :put =range(1,10)
+              </code></pre>
+            What happens? Try it!
+          </section>
+          <section>
+            (Warm-up)<br />
+            Now increment every number by 5!
+            <pre style="width: 50%;"><code>
+      %s/\d+/\=submatch(0)+5/g
+              </code></pre>
+            Cool!
+          </section>
+        </section>
+        <section>
+          <section>
+            <p>
+              Automated code testing with Bash
+            </p>
+            <div style="display: flex; align-items: center;">
+              <div style="flex: 1;">
+                <pre style="margin-top: 0;"><code data-trim data-noescape>
+            .
+            ├── ProblemSet.pdf
+            ├── input
+            │   ├── 1.in
+            │   ├── 2.in
+            │   ├── 3.in
+            │   └── 4.in
+            ├── output
+            │   ├── 1.ans
+            │   ├── 2.ans
+            │   ├── 3.ans
+            │   └── 4.ans
+            ├── solve
+            └── solve.c
+                </code></pre>
+              </div>
+              <div style="flex: 1; text-align: left;">
+                <p>
+                  Given these inputs, check if the program
+                  <code>solve</code> produces correct outputs. i.e.
+                  <code>./solve 1.in</code> matches <code>1.ans</code>.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <p>
+              We can run the program by hand e.g. <code>./solve 1.in</code>
+              for each input file and verify correctness against each output
+              file.
+            </p>
+            <p class="fragment fade-up">
+              But we can do better!
+            </p>
+          </section>
+          <section>
+            <p>We can make a file <code>run.sh</code> with content:</p>
+            <pre><code>
+              ./solve 1.in 1.out &amp;&amp; diff 1.out 1.ans
+              ./solve 2.in 2.out &amp;&amp; diff 2.out 2.ans
+              ./solve 3.in 3.out &amp;&amp; diff 3.out 3.ans
+              ./solve 4.in 4.out &amp;&amp; diff 4.out 4.ans
+            </code></pre>
+            <p>With the power of Vim, we can type this quickly!</p>
+            <p><code>./run.sh</code> will give no output if all is well :)</p>
+          </section>
+          <section>
+            <p>
+              We could write a simple script that settles everything for us,
+              regardless the of number of test cases.
+            </p>
+            <pre><code>
+   echo "Running test cases..."
+   dir="."
+   i=0
+   for f in `ls ${dir}/input | sort -V`
+     do 
+       let i++
+       echo Case $i:
+       echo ${dir}/input/$f
+       ./solve < $dir/input/$f > $dir/output/${f%%.*}.out
+       diff $dir/output/${f%%.*}.ans $dir/output/${f%%.*}.out
+     done
+            </code></pre>
+            <p class="fragment fade-up">
+              You have just automated your homework.
+            </p>
+          </section>
+        </section>
+        <section>
+          <section>
+            <p>
+              Mass rename files with Vim and Bash
+            </p>
+            <div style="display: flex; align-items: center;">
+              <div style="flex: 1;">
+                from this
+                <pre style="margin-top: 0;"><code data-trim data-noescape>
+                  1-sql_practice.sql
+                  10-sql_practice.sql
+                  11-sql_practice.sql
+                  12-sql_practice.sql
+                  13-sql_practice.sql
+                  2-sql_practice.sql
+                  3-sql_practice.sql
+                  4-sql_practice.sql
+                  5-sql_practice.sql
+                  6-sql_practice.sql
+                  7-sql_practice.sql
+                  8-sql_practice.sql
+                  9-sql_practice.sql
+                </code></pre>
+              </div>
+              <div>
+                &#8594;
+              </div>
+              <div style="flex: 1;">
+                to this
+                <pre style="margin-top: 0;"><code data-trim data-noescape>
+                  01-sql_practice.sql
+                  02-sql_practice.sql
+                  03-sql_practice.sql
+                  04-sql_practice.sql
+                  05-sql_practice.sql
+                  06-sql_practice.sql
+                  07-sql_practice.sql
+                  08-sql_practice.sql
+                  09-sql_practice.sql
+                  10-sql_practice.sql
+                  11-sql_practice.sql
+                  12-sql_practice.sql
+                  13-sql_practice.sql
+                </code></pre>
+              </div>
+            </div>
+            <p style="font-size: 26px;">
+              Recently did this when I realized there were more exercises than I
+              had anticipated!
+              <br />
+              Not 0-padding gives annoying sorting issues &gt;&lt;
+            </p>
+          </section>
+          <section>
+            <p><b>Process</b></p>
+            <ol>
+              <li class="fragment fade-up">
+                Read the filenames into vim
+              </li>
+              <li class="fragment fade-up">
+                Mass substitution
+              </li>
+              <li class="fragment fade-up">
+                Run each line with bash
+              </li>
+            </ol>
+          </section>
+          <section>
+            1. Read the filenames into vim
+            <pre style="width: 50%;"><code data-trim data-noescape="">
+            ls *.sql | vim -
+            </code></pre>
+          </section>
+          <section>
+            2. Mass substitution part 1
+            <pre><code data-trim data-noescape="">
+            :%s/.*/\="mv ".submatch(0)." ".submatch(0)/g
+            </code></pre>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+              class="fragment fade-up"
+            >
+              <div style="flex: 1;">
+                <pre style="margin-top: 0;"><code data-trim data-noescape>
+                1-sql_practice.sql
+                10-sql_practice.sql
+                11-sql_practice.sql
+                12-sql_practice.sql
+                13-sql_practice.sql
+                2-sql_practice.sql
+                3-sql_practice.sql
+                4-sql_practice.sql
+                5-sql_practice.sql
+                6-sql_practice.sql
+                7-sql_practice.sql
+                8-sql_practice.sql
+                9-sql_practice.sql
+            </code></pre>
+              </div>
+              <div>
+                &#8594;
+              </div>
+              <div style="flex: 1;">
+                <pre style="margin-top: 0;"><code data-trim data-noescape>
+                  mv 1-sql_practice.sql 1-sql_practice.sql
+                  mv 10-sql_practice.sql 10-sql_practice.sql
+                  mv 11-sql_practice.sql 11-sql_practice.sql
+                  mv 12-sql_practice.sql 12-sql_practice.sql
+                  mv 13-sql_practice.sql 13-sql_practice.sql
+                  mv 2-sql_practice.sql 2-sql_practice.sql
+                  mv 3-sql_practice.sql 3-sql_practice.sql
+                  mv 4-sql_practice.sql 4-sql_practice.sql
+                  mv 5-sql_practice.sql 5-sql_practice.sql
+                  mv 6-sql_practice.sql 6-sql_practice.sql
+                  mv 7-sql_practice.sql 7-sql_practice.sql
+                  mv 8-sql_practice.sql 8-sql_practice.sql
+                  mv 9-sql_practice.sql 9-sql_practice.sql
+            </code></pre>
+              </div>
+            </div>
+          </section>
+          <section>
+            2. Mass substitution part 2
+            <pre><code data-trim data-noescape="">
+            :%s/sql \([1-9]\)-/\="sql 0".submatch(1)."-"/g
+            </code></pre>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+              class="fragment fade-up"
+            >
+              <div style="flex: 1;">
+                <pre style="margin-top: 0;"><code data-trim data-noescape>
+mv 1-sql_practice.sql 1-sql_practice.sql
+mv 10-sql_practice.sql 10-sql_practice.sql
+mv 11-sql_practice.sql 11-sql_practice.sql
+mv 12-sql_practice.sql 12-sql_practice.sql
+mv 13-sql_practice.sql 13-sql_practice.sql
+mv 2-sql_practice.sql 2-sql_practice.sql
+mv 3-sql_practice.sql 3-sql_practice.sql
+mv 4-sql_practice.sql 4-sql_practice.sql
+mv 5-sql_practice.sql 5-sql_practice.sql
+mv 6-sql_practice.sql 6-sql_practice.sql
+mv 7-sql_practice.sql 7-sql_practice.sql
+mv 8-sql_practice.sql 8-sql_practice.sql
+mv 9-sql_practice.sql 9-sql_practice.sql
+            </code></pre>
+              </div>
+              <div>
+                &#8594;
+              </div>
+              <div style="flex: 1;">
+                <pre style="margin-top: 0;"><code data-trim data-noescape>
+mv 1-sql_practice.sql 01-sql_practice.sql
+mv 10-sql_practice.sql 10-sql_practice.sql
+mv 11-sql_practice.sql 11-sql_practice.sql
+mv 12-sql_practice.sql 12-sql_practice.sql
+mv 13-sql_practice.sql 13-sql_practice.sql
+mv 2-sql_practice.sql 02-sql_practice.sql
+mv 3-sql_practice.sql 03-sql_practice.sql
+mv 4-sql_practice.sql 04-sql_practice.sql
+mv 5-sql_practice.sql 05-sql_practice.sql
+mv 6-sql_practice.sql 06-sql_practice.sql
+mv 7-sql_practice.sql 07-sql_practice.sql
+mv 8-sql_practice.sql 08-sql_practice.sql
+mv 9-sql_practice.sql 09-sql_practice.sql
+            </code></pre>
+              </div>
+            </div>
+          </section>
+          <section>
+            3. Run each line with bash
+            <pre style="width: 20%;"><code data-trim data-noescape="">
+            :w !sh
+            </code></pre>
+            <p class="fragment fade-up">
+              This basically renames each file to be 0 padded.
+              <br />
+              Seems easy to do by hand?
+              <b>Try 2048 files.</b>
+            </p>
+          </section>
+        </section>
+        <section>
+          <p>
+            My helpful bash aliases and functions for working seamlessly between
+            windows and wsl file systems.
+          </p>
+          <pre><code>
+    # opens (dora the) explorer in cur dir
+    alias dora='explorer.exe .' 
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+    # copies pwd output
+    alias cpwd='pwd | clip.exe' 
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+    # turns pwd output from UNIX &#8594; WINDOWS path format and copies it
+    alias ccpwd='wslpath -w "$(pwd)" | clip.exe' 
+
+    # usage: cdd "&lt;CTRL+SHIFT+V&gt;" to go to a windows directory
+    cdd() {
+      cd "$(wslpath -a "$1")"
+    }
+            </code></pre>
+        </section>
+        <section>
+          <div style="flex-direction: column;">
+            <p>
+              Thanks for coming to my TED talk.
+            </p>
+            <ul>
+              <li>
+                <a href="https://instagram.com/geobrah">My Instagram</a>
+              </li>
+              <li>
+                <a href="https://www.linkedin.com/in/georgie-lee-858454146/"
+                  >My LinkedIn</a
+                >
+              </li>
+              <li>
+                <a href="mailto:georgie@u.nus.edu">georgie@u.nus.edu</a>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+      });
+    </script>
+  </body>
 </html>
